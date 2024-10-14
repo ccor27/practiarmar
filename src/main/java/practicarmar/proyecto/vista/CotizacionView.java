@@ -1,0 +1,810 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ */
+package practicarmar.proyecto.vista;
+
+import com.itextpdf.text.DocumentException;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import practiarmar.proyecto.modelo.Item;
+import practiarmar.proyecto.modelo.ItemCotizacion;
+import practiarmar.proyecto.services.PdfCreator;
+
+/**
+ *
+ * @author crist
+ */
+public class CotizacionView extends javax.swing.JPanel {
+
+    private List<ItemCotizacion> itemsDeLaCotizacion;
+    private ItemCotizacion itemSeleccionado;
+    private DefaultTableModel modelItemTable;
+    private DecimalFormat decimalFormat;
+    private double precioMateriales;
+    private MenuPrincipal menu;
+    private boolean necesitaEmpleadosFlag;
+    private PdfCreator pdfCreator;
+    private boolean esVisible;
+    
+
+    /**
+     * Creates new form CotzacionView
+     */
+    public CotizacionView(MenuPrincipal menu) {
+        initComponents();
+        this.menu = menu;
+        this.pdfCreator = new PdfCreator();//ver si esta es la mejor manera de tenerlo, o usarlo como singleton
+        modelItemTable = (DefaultTableModel) tblItems.getModel();
+        decimalFormat = new DecimalFormat("#,##0");
+        txtNumeroEmpleados.setEnabled(false);
+        // txtNumeroEmpleados.setText("0");
+        precioMateriales = 0.0;
+        necesitaEmpleadosFlag = false;
+        itemSeleccionado = null;
+        itemsDeLaCotizacion = new ArrayList<>();
+        esVisible=true;
+        jformatGroup();
+        documentTextField();
+    }
+
+    /**
+     * metodo para hacer que cada vez que el numero de empleados cambie, se
+     * actualize el precio total
+     */
+    private void documentTextField() {
+        txtNumeroEmpleados.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarPrecioTotal();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarPrecioTotal();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                actualizarPrecioTotal();
+            }
+        });
+    }
+
+    /**
+     * Metodo para hacer un grupo de los jformat y asi cada vez que se altere el
+     * valor en cada uno, se vea reflejado en el precio total
+     */
+    private void jformatGroup() {
+        for (JFormattedTextField field
+                : Arrays.asList(jformatPrecioManoDeObra, jformatPagoPorEmpleado, jformatPrecioMateriales)) {
+            field.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    actualizarPrecioTotal();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    actualizarPrecioTotal();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    actualizarPrecioTotal();
+                }
+            });
+        }
+    }
+
+    private void actualizarPrecioTotal() {
+        double precioEmpleado
+                = jformatPagoPorEmpleado.getText().equals("") ? 0 : Double.parseDouble(jformatPagoPorEmpleado.getText().replaceAll("\\.", ""));
+        double precioManoDeObra
+                = jformatPrecioManoDeObra.getText().equals("") ? 0 : Double.parseDouble(jformatPrecioManoDeObra.getText().replaceAll("\\.", ""));
+        //verificar si hay empleados
+        int numEmpleados = saberNumeroEmpleados();
+        //no afecta nada si el numero de empleados es cero, ya que si es cierto, el precioEmpledo tambien lo es
+        double precio = (precioEmpleado * numEmpleados) + precioManoDeObra + precioMateriales;
+        jformatPrecioTotal.setText(String.valueOf(precio));
+
+    }
+
+    public int saberNumeroEmpleados() {
+        if (txtNumeroEmpleados.getText().equals("0") || txtNumeroEmpleados.getText().equals("")) {
+            return 0;
+        } else {
+            return Integer.parseInt(txtNumeroEmpleados.getText());
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblItems = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtNombre = new javax.swing.JTextField();
+        txtCantidad = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtAreaDescripcionItem = new javax.swing.JTextArea();
+        btnEliminar = new javax.swing.JButton();
+        btnAgregar = new javax.swing.JButton();
+        jformattPrecioItem = new javax.swing.JFormattedTextField(decimalFormat);
+        jLabel15 = new javax.swing.JLabel();
+        comboVisible = new javax.swing.JComboBox<>();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        comboNecesitaEmpleados = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        txtNumeroEmpleados = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        JDateFechaEntrega = new com.toedter.calendar.JDateChooser();
+        jLabel12 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtAreaDescripcion = new javax.swing.JTextArea();
+        jLabel13 = new javax.swing.JLabel();
+        jformatPagoPorEmpleado = new javax.swing.JFormattedTextField(decimalFormat);
+        jformatPrecioManoDeObra = new javax.swing.JFormattedTextField(decimalFormat);
+        jformatPrecioMateriales = new javax.swing.JFormattedTextField(decimalFormat);
+        jformatPrecioTotal = new javax.swing.JFormattedTextField(decimalFormat);
+        txtNombreCliente = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+
+        setMaximumSize(new java.awt.Dimension(1150, 704));
+        setMinimumSize(new java.awt.Dimension(1150, 704));
+
+        jPanel1.setMaximumSize(new java.awt.Dimension(1150, 704));
+        jPanel1.setMinimumSize(new java.awt.Dimension(1150, 704));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setText("Datos de la cotizacion");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, -1, -1));
+        jPanel1.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 610, 1100, 20));
+
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tblItems.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Nombre", "Precio", "Cantidad", "Visible"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Double.class, java.lang.Integer.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        tblItems.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblItemsMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblItems);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 37, 547, 420));
+
+        jLabel2.setText("Nombre");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 50, -1, -1));
+
+        jLabel3.setText("Cantidad");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 110, -1, -1));
+
+        jLabel4.setText("Precio por unidad");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 170, -1, 20));
+
+        jLabel5.setText("Descripcion");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 270, -1, -1));
+        jPanel2.add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 270, -1));
+
+        txtCantidad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCantidadKeyTyped(evt);
+            }
+        });
+        jPanel2.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 100, 270, -1));
+
+        txtAreaDescripcionItem.setColumns(20);
+        txtAreaDescripcionItem.setLineWrap(true);
+        txtAreaDescripcionItem.setRows(5);
+        jScrollPane2.setViewportView(txtAreaDescripcionItem);
+
+        jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 270, 270, 110));
+
+        btnEliminar.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\eliminar.png")); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.setPreferredSize(new java.awt.Dimension(106, 37));
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 420, 120, -1));
+
+        btnAgregar.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\agregar.png")); // NOI18N
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 420, 120, -1));
+
+        jformattPrecioItem.setColumns(10);
+        jformattPrecioItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jformattPrecioItemKeyTyped(evt);
+            }
+        });
+        jPanel2.add(jformattPrecioItem, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 170, 270, 20));
+
+        jLabel15.setText("Visible para el cliente");
+        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 220, -1, -1));
+
+        comboVisible.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Si", "No" }));
+        comboVisible.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboVisibleActionPerformed(evt);
+            }
+        });
+        jPanel2.add(comboVisible, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 220, 270, -1));
+
+        jTabbedPane1.addTab("Items", jPanel2);
+
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setText("Necesidad de empleados");
+        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 80, -1, -1));
+
+        comboNecesitaEmpleados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Si", "No" }));
+        comboNecesitaEmpleados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboNecesitaEmpleadosActionPerformed(evt);
+            }
+        });
+        jPanel3.add(comboNecesitaEmpleados, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 80, 270, -1));
+
+        jLabel7.setText("Numero de empleados");
+        jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 150, -1, 20));
+
+        txtNumeroEmpleados.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNumeroEmpleadosKeyTyped(evt);
+            }
+        });
+        jPanel3.add(txtNumeroEmpleados, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 150, 270, -1));
+
+        jLabel8.setText("Pago por empleado");
+        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, -1, 30));
+
+        jLabel9.setText("Precio mano de obra");
+        jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 290, -1, 30));
+
+        jLabel10.setText("Precio Materiales");
+        jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 380, -1, -1));
+
+        jLabel11.setText("Fecha de entrega");
+        jPanel3.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 80, -1, -1));
+        jPanel3.add(JDateFechaEntrega, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 80, 270, -1));
+
+        jLabel12.setText("Descripcion");
+        jPanel3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 290, -1, -1));
+
+        txtAreaDescripcion.setColumns(20);
+        txtAreaDescripcion.setLineWrap(true);
+        txtAreaDescripcion.setRows(5);
+        jScrollPane3.setViewportView(txtAreaDescripcion);
+
+        jPanel3.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 280, 270, 130));
+
+        jLabel13.setText("Precio total");
+        jPanel3.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 150, -1, -1));
+
+        jformatPagoPorEmpleado.setColumns(10);
+        jformatPagoPorEmpleado.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        jformatPagoPorEmpleado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jformatPagoPorEmpleadoKeyTyped(evt);
+            }
+        });
+        jPanel3.add(jformatPagoPorEmpleado, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 220, 270, -1));
+
+        jformatPrecioManoDeObra.setColumns(10);
+        jformatPrecioManoDeObra.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        jformatPrecioManoDeObra.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jformatPrecioManoDeObraKeyTyped(evt);
+            }
+        });
+        jPanel3.add(jformatPrecioManoDeObra, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 290, 270, -1));
+
+        jformatPrecioMateriales.setEditable(false);
+        jPanel3.add(jformatPrecioMateriales, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 380, 270, -1));
+
+        jformatPrecioTotal.setEditable(false);
+        jformatPrecioTotal.setColumns(10);
+        jformatPrecioTotal.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        jPanel3.add(jformatPrecioTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 150, 270, -1));
+        jPanel3.add(txtNombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 220, 270, -1));
+
+        jLabel14.setText("Cliente");
+        jPanel3.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 220, -1, -1));
+
+        jTabbedPane1.addTab("Datos", jPanel3);
+
+        jPanel1.add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 1090, 530));
+
+        jButton1.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\archivoPdfImagen.png")); // NOI18N
+        jButton1.setText("Descargar");
+        jButton1.setMaximumSize(new java.awt.Dimension(102, 37));
+        jButton1.setMinimumSize(new java.awt.Dimension(102, 37));
+        jButton1.setPreferredSize(new java.awt.Dimension(102, 37));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 630, 181, 53));
+
+        jButton2.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\volverI.png")); // NOI18N
+        jButton2.setText("Volver");
+        jButton2.setMaximumSize(new java.awt.Dimension(102, 37));
+        jButton2.setMinimumSize(new java.awt.Dimension(102, 37));
+        jButton2.setPreferredSize(new java.awt.Dimension(102, 37));
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 630, 181, 53));
+
+        jButton3.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\enviarImagen.png")); // NOI18N
+        jButton3.setText("Enviar");
+        jButton3.setMaximumSize(new java.awt.Dimension(102, 37));
+        jButton3.setMinimumSize(new java.awt.Dimension(102, 37));
+        jButton3.setPreferredSize(new java.awt.Dimension(102, 37));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 630, 181, 53));
+
+        jButton4.setIcon(new javax.swing.ImageIcon("C:\\Users\\crist\\OneDrive\\Documentos\\NetBeansProjects\\practiarmar\\src\\main\\resources\\limpiar.png")); // NOI18N
+        jButton4.setText("Limpiar");
+        jButton4.setMaximumSize(new java.awt.Dimension(102, 37));
+        jButton4.setMinimumSize(new java.awt.Dimension(102, 37));
+        jButton4.setPreferredSize(new java.awt.Dimension(102, 37));
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 630, 181, 53));
+        jPanel1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 1100, 20));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        
+        if (itemSeleccionado != null) {//se va a editar un item
+            if (camposItemsValidos()) {
+                String nombre = txtNombre.getText();
+                int cantidad = Integer.parseInt(txtCantidad.getText());
+                double precio = Double.parseDouble(jformattPrecioItem.getText().replaceAll("\\.", ""));
+                String descripcion = txtAreaDescripcionItem.getText();
+                itemsDeLaCotizacion.forEach(i -> {
+                    if (i.equals(itemSeleccionado)) {
+                        i.setNombre(nombre);
+                        i.setCantidad(cantidad);
+                        i.setDescripcion(descripcion);
+                        i.setPrecioPorUnidad(precio);
+                    }
+                });
+                 limpiarCamposItem();
+                    rellenarTablaItem();
+                    calcularPrecioMateriales();
+                    JOptionPane.showMessageDialog(this, "Item editado con exito!");
+                    itemSeleccionado=null;
+            } else {
+                JOptionPane.showMessageDialog(this, "Debe rellenar todos los campos!");
+            }
+        } else {//se va a crear un item
+            if (camposItemsValidos()) {
+                String nombre = txtNombre.getText();
+                boolean nombreExiste = itemsDeLaCotizacion
+                        .stream().anyMatch(i -> i.getNombre().equalsIgnoreCase(nombre));
+                if (!nombreExiste) {
+                    int cantidad = Integer.parseInt(txtCantidad.getText());
+                    double precio = Double.parseDouble(jformattPrecioItem.getText().replaceAll("\\.", ""));
+                    String descripcion = txtAreaDescripcionItem.getText();
+                    ItemCotizacion item = new ItemCotizacion(nombre, descripcion, cantidad, precio,esVisible);
+                    itemsDeLaCotizacion.add(item);
+                    limpiarCamposItem();
+                    rellenarTablaItem();
+                    calcularPrecioMateriales();
+                    JOptionPane.showMessageDialog(this, "Item agregado con exito!");
+                } else {
+                    txtNombre.setText("");
+                    JOptionPane.showMessageDialog(this, "No puede tener items con el mismo nombre!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Debe rellenar todos los campos!");
+            }
+        }
+    }//GEN-LAST:event_btnAgregarActionPerformed
+    private void calcularPrecioMateriales() {
+        precioMateriales = itemsDeLaCotizacion.stream()
+                .mapToDouble(item -> item.getPrecioPorUnidad() * item.getCantidad())
+                .sum();
+        jformatPrecioMateriales.setText(decimalFormat.format(precioMateriales));
+    }
+    private void tblItemsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblItemsMouseClicked
+        String nombreItem = (String) modelItemTable.getDataVector().elementAt(tblItems.convertRowIndexToModel(tblItems.getSelectedRow())).get(0);
+        for (ItemCotizacion item : itemsDeLaCotizacion) {
+            if (item.getNombre().equalsIgnoreCase(nombreItem)) {
+                txtNombre.setText(nombreItem);
+                txtCantidad.setText(String.valueOf(item.getCantidad()));
+                txtAreaDescripcionItem.setText(item.getDescripcion());
+                jformattPrecioItem.setText(String.valueOf(decimalFormat.format(item.getPrecioPorUnidad())));
+                itemSeleccionado = item;
+                if(itemSeleccionado.isEsVisible()){
+                    comboVisible.setSelectedIndex(0);
+                }else{
+                    comboVisible.setSelectedIndex(1);
+                }
+                break;
+            }
+        }
+    }//GEN-LAST:event_tblItemsMouseClicked
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        if (itemSeleccionado != null) {
+            itemsDeLaCotizacion.remove(itemSeleccionado);
+            itemSeleccionado = null;
+            rellenarTablaItem();
+            limpiarCamposItem();
+            calcularPrecioMateriales();
+            JOptionPane.showMessageDialog(this, "Item eliminado con exito!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un item!");
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void comboNecesitaEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboNecesitaEmpleadosActionPerformed
+        String necesitaEmpleados = (String) comboNecesitaEmpleados.getSelectedItem();
+        switch (necesitaEmpleados) {
+            case "Si":
+                txtNumeroEmpleados.setEnabled(true);
+                txtNumeroEmpleados.setText("0");
+                jformatPagoPorEmpleado.setEnabled(true);
+                actualizarPrecioTotal();
+                necesitaEmpleadosFlag = true;
+                break;
+            case "No":
+                txtNumeroEmpleados.setText("");
+                txtNumeroEmpleados.setEnabled(false);
+                txtNumeroEmpleados.setText("0");
+                jformatPagoPorEmpleado.setEnabled(false);
+                jformatPagoPorEmpleado.setText("0");
+                necesitaEmpleadosFlag = false;
+                actualizarPrecioTotal();
+                break;
+            default:
+
+        }
+
+
+    }//GEN-LAST:event_comboNecesitaEmpleadosActionPerformed
+
+    private void txtCantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCantidadKeyTyped
+        char c = evt.getKeyChar();
+        if (!(Character.isDigit(c)) && c != '+') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtCantidadKeyTyped
+
+    private void jformattPrecioItemKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jformattPrecioItemKeyTyped
+        char c = evt.getKeyChar();
+        if (!(Character.isDigit(c)) && c != '+') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_jformattPrecioItemKeyTyped
+
+    private void txtNumeroEmpleadosKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNumeroEmpleadosKeyTyped
+        char c = evt.getKeyChar();
+        if (!(Character.isDigit(c)) && c != '+') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtNumeroEmpleadosKeyTyped
+
+    private void jformatPagoPorEmpleadoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jformatPagoPorEmpleadoKeyTyped
+        char c = evt.getKeyChar();
+        if (!(Character.isDigit(c)) && c != '+') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_jformatPagoPorEmpleadoKeyTyped
+
+    private void jformatPrecioManoDeObraKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jformatPrecioManoDeObraKeyTyped
+        char c = evt.getKeyChar();
+        if (!(Character.isDigit(c)) && c != '+') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_jformatPrecioManoDeObraKeyTyped
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        //validar que haya items
+        if (!itemsDeLaCotizacion.isEmpty()) {
+            //validar los datos
+            if (camposValidados()) {
+                if (!necesitaEmpleadosFlag) {
+                    //no necesitaran empleados
+                    double manoDeObra = Double.parseDouble(jformatPrecioManoDeObra.getText().replaceAll("\\.", ""));
+                    double precioMateriales = Double.parseDouble(jformatPrecioMateriales.getText().replaceAll("\\.", ""));
+                    double precioTotal = Double.parseDouble(jformatPrecioTotal.getText().replaceAll("\\.", ""));
+                    String descripcion = txtAreaDescripcion.getText();
+                    String nombreCliente = txtNombreCliente.getText();
+                    LocalDate fechaEntrega = JDateFechaEntrega.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+                    //generar pdf
+                    generarPdfSinEmpleados(manoDeObra, precioMateriales, precioTotal, descripcion, fechaEntrega, nombreCliente);
+                } else {
+                    //necesitaran empleados
+                    double manoDeObra = Double.parseDouble(jformatPrecioManoDeObra.getText().replaceAll("\\.", ""));
+                    double precioMateriales = Double.parseDouble(jformatPrecioMateriales.getText().replaceAll("\\.", ""));
+                    double precioTotal = Double.parseDouble(jformatPrecioTotal.getText());
+                    String descripcion = txtAreaDescripcion.getText();
+                    int numeroEmpleados = Integer.parseInt(txtNumeroEmpleados.getText());
+                    double pagoPorEmpleado = Double.parseDouble(jformatPagoPorEmpleado.getText().replaceAll("\\.", ""));
+                    String nombreCliente = txtNombreCliente.getText();
+                    LocalDate fechaEntrega = JDateFechaEntrega.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    //generar pdf
+                    generarPdfConEmpleados(manoDeObra, precioMateriales, precioTotal, descripcion, fechaEntrega,
+                            numeroEmpleados, pagoPorEmpleado, nombreCliente);
+                }
+                //limpiar todos los datos
+                limpiarTodosLosCampos();
+                //mostrar mensaje de pdf con exito
+                JOptionPane.showMessageDialog(this, "Cotizacion creada con exito!\n mire su descarga en su escritorio");
+            } else {
+                JOptionPane.showMessageDialog(this, "Debe rellenar todos los datos y añadir al menos 1 items!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe haber al menos 1 item para crear el proyecto!");
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void generarPdfConEmpleados(double manoDeObra, double precioMateriales, double precioTotal, String dscripcon,
+            LocalDate fechaEntrega, int numEmpleados, double pagoPorEmpleado, String nombreCliente) {
+        try {
+            //pdf con empleados para el empleados/usuarios
+            //enviar los items
+            pdfCreator.createPdfFileToAdminWithEmployees(manoDeObra, precioMateriales, precioTotal, numEmpleados, pagoPorEmpleado, nombreCliente, itemsDeLaCotizacion, dscripcon, fechaEntrega);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrio un error durante la creación del pdf: \n" + ex.getLocalizedMessage());
+            Logger.getLogger(CotizacionView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DocumentException ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrio un error durante la creación del pdf: \n" + ex.getLocalizedMessage());
+            Logger.getLogger(CotizacionView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void generarPdfSinEmpleados(double manoDeObra, double precioMateriales, double precioTotal,
+            String dscripcon, LocalDate fechaEntrega, String nombreCliente) {
+        try {
+            //pdf sin empleados para el empleados/usuarios
+            //enviar los items
+            pdfCreator.createPdfFileToAdminWithoutEmployees(manoDeObra, precioMateriales, precioTotal, dscripcon, fechaEntrega, nombreCliente, itemsDeLaCotizacion);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrio un error durante la creación del pdf: \n" + ex.getLocalizedMessage());
+            // Logger.getLogger(CotizacionView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DocumentException ex) {
+            JOptionPane.showMessageDialog(this, "Ocurrio un error durante la creación del pdf: \n" + ex.getLocalizedMessage());
+            //Logger.getLogger(CotizacionView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean camposValidados() {
+        if (!necesitaEmpleadosFlag) {
+            //validar campos cuando no se necesite empleados
+            return !(jformatPrecioManoDeObra.getText().equalsIgnoreCase("")
+                    || itemsDeLaCotizacion.isEmpty()
+                    //|| jformatPrecioMateriales.getText().equalsIgnoreCase("")
+                    || jformatPrecioTotal.getText().equalsIgnoreCase("")
+                    || txtAreaDescripcion.getText().equalsIgnoreCase(""));
+        } else {
+            //validar campos cuando  se necesita empleados
+            return !(jformatPrecioManoDeObra.getText().equalsIgnoreCase("")
+                    || jformatPrecioMateriales.getText().equalsIgnoreCase("")
+                    || jformatPrecioTotal.getText().equalsIgnoreCase("")
+                    || txtAreaDescripcion.getText().equalsIgnoreCase("")
+                    || txtNumeroEmpleados.getText().equalsIgnoreCase("")
+                    || jformatPagoPorEmpleado.getText().equalsIgnoreCase(""));
+        }
+    }
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        menu.showProyectoPanel();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        int response = JOptionPane.showConfirmDialog(
+                this,
+                "¿Estas seguro que quieres limpiar los campos?\n"
+                + "esta accion eliminara todos los datos del proyecto, el proyecto quedara vacio.",
+                "Confirmacion de limpieza",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        if (response == JOptionPane.YES_OPTION) {
+            itemsDeLaCotizacion.clear();
+            rellenarTablaItem();
+            limpiarCamposItem();
+            txtNumeroEmpleados.setText("0");
+            jformatPagoPorEmpleado.setText("0");
+            jformatPrecioManoDeObra.setText("0");
+            jformatPrecioMateriales.setText("0");
+            //actualizarPrecioTotal();
+            txtAreaDescripcion.setText("");
+            txtNombreCliente.setText("");
+            JDateFechaEntrega.setDate(null);
+            comboNecesitaEmpleados.setSelectedIndex(0);
+            itemSeleccionado = null;
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void comboVisibleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboVisibleActionPerformed
+        esVisible = comboVisible.getSelectedIndex()==0;
+    }//GEN-LAST:event_comboVisibleActionPerformed
+
+    private boolean camposItemsValidos() {
+        return !(txtNombre.getText().equals("")
+                || txtCantidad.getText().equals("")
+                || txtAreaDescripcionItem.getText().equals("")
+                || jformattPrecioItem.getText().equals(""));
+
+    }
+
+    private void limpiarCamposItem() {
+        txtAreaDescripcionItem.setText("");
+        txtNombre.setText("");
+        txtCantidad.setText("");
+        jformattPrecioItem.setText("");
+
+    }
+
+    private void limpiarTodosLosCampos() {
+        itemsDeLaCotizacion.clear();
+        rellenarTablaItem();
+        limpiarCamposItem();
+        txtNumeroEmpleados.setText("0");
+        jformatPagoPorEmpleado.setText("0");
+        jformatPrecioManoDeObra.setText("0");
+        jformatPrecioMateriales.setText("0");
+        jformatPrecioTotal.setText("0");
+        //actualizarPrecioTotal();
+        txtAreaDescripcion.setText("");
+        txtNombreCliente.setText("");
+        JDateFechaEntrega.setDate(null);
+        comboNecesitaEmpleados.setSelectedIndex(0);
+        itemSeleccionado = null;
+    }
+
+    private void rellenarTablaItem() {
+        modelItemTable.setRowCount(0);
+        if (itemsDeLaCotizacion != null && !itemsDeLaCotizacion.isEmpty()) {
+            Object rowData[] = new Object[4];
+            for (ItemCotizacion item : itemsDeLaCotizacion) {
+                rowData[0] = item.getNombre();
+                rowData[1] = item.getPrecioPorUnidad();
+                rowData[2] = item.getCantidad();
+                rowData[3] = item.isEsVisible() ? "Si" : "No";
+                modelItemTable.addRow(rowData);
+            }
+        }
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser JDateFechaEntrega;
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JComboBox<String> comboNecesitaEmpleados;
+    private javax.swing.JComboBox<String> comboVisible;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JFormattedTextField jformatPagoPorEmpleado;
+    private javax.swing.JFormattedTextField jformatPrecioManoDeObra;
+    private javax.swing.JFormattedTextField jformatPrecioMateriales;
+    private javax.swing.JFormattedTextField jformatPrecioTotal;
+    private javax.swing.JFormattedTextField jformattPrecioItem;
+    private javax.swing.JTable tblItems;
+    private javax.swing.JTextArea txtAreaDescripcion;
+    private javax.swing.JTextArea txtAreaDescripcionItem;
+    private javax.swing.JTextField txtCantidad;
+    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtNombreCliente;
+    private javax.swing.JTextField txtNumeroEmpleados;
+    // End of variables declaration//GEN-END:variables
+}
